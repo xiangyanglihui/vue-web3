@@ -1,4 +1,4 @@
-# my-project
+# vue-web3
 
 > A Vue.js project
 
@@ -7,6 +7,9 @@
 ``` bash
 # install dependencies
 npm install
+
+# run the express server at localhost:3000
+npm run server
 
 # serve with hot reload at localhost:8080
 npm run dev
