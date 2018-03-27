@@ -4,7 +4,7 @@
     <p>您目前連接的以太網路: {{ network }}</p>
     <p>您的地址: {{ coinbase }}</p>
     <p>目前餘額: {{ balance }} Wei // {{ ethBalance }} Eth</p>
-    <p>此篇喜翻 {{ totalLike }} </p>
+    <p>此篇喜翻 {{ like }} </p>
     <button v-on:click="Ilikeit">I like it</button>
   </div>
 </template>
@@ -24,8 +24,14 @@ export default {
     this.$store.dispatch('getContractInstance')
   },
   methods: {
-    getLike: function () {
-      this.like = this.$store.state.blockchain.contractInstance()._like.call()
+    getLike () {
+      if (this.$store.state.blockchain.contractInstance != null) {
+        this.$store.state.blockchain.contractInstance().methods._like().call()
+          .then((totLike) => {
+            console.log(totLike)
+            this.like = totLike
+          })
+      }
     },
     Ilikeit () {
       this.$store.state.blockchain.contractInstance().methods.I_like().send({
@@ -36,29 +42,26 @@ export default {
           console.log(err)
           this.pending = false
         } else {
-          this.totalLike = this.$store.state.blockchain.contractInstance().methods._like.call()._method.outputs.length
+          this.getLike()
         }
       })
     }
   },
-  computed: {
-    totalLike () {
-      if (this.$store.state.blockchain.contractInstance != null) {
-        return this.$store.state.blockchain.contractInstance().methods._like.call()._method.outputs.length
-      } else {
-        return 0
-      }
-    },
-    ...mapState({
-      isInjected: state => state.blockchain.web3.isInjected,
-      network: state => NETWORKS[state.blockchain.web3.networkId],
-      coinbase: state => state.blockchain.web3.coinbase,
-      balance: state => state.blockchain.web3.balance,
-      ethBalance: state => {
-        if (state.blockchain.web3.web3Instance !== null) return state.blockchain.web3.web3Instance().utils.fromWei(state.blockchain.web3.balance, 'ether')
-      }
-    })
-  }
+  watch: {
+    contractInstance () {
+      this.getLike()
+    }
+  },
+  computed: mapState({
+    contractInstance: state => state.blockchain.contractInstance,
+    isInjected: state => state.blockchain.web3.isInjected,
+    network: state => NETWORKS[state.blockchain.web3.networkId],
+    coinbase: state => state.blockchain.web3.coinbase,
+    balance: state => state.blockchain.web3.balance,
+    ethBalance: state => {
+      if (state.blockchain.web3.web3Instance !== null) return state.blockchain.web3.web3Instance().utils.fromWei(state.blockchain.web3.balance, 'ether')
+    }
+  })
 }
 </script>
 
