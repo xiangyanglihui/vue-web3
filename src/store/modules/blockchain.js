@@ -32,7 +32,7 @@ const mutations = {
     state.web3.balance = payload.balance
   },
   registerContractInstance (state, payload) {
-    console.log('Casino contract instance: ', payload)
+    console.log('Like contract instance: ', payload)
     state.contractInstance = () => payload
   }
 }
@@ -53,7 +53,7 @@ const actions = {
   },
   getContractInstance ({commit}) {
     getContract.then(result => {
-      // commit('registerContractInstance', result)
+      commit('registerContractInstance', result)
     }).catch(e => console.log(e))
   }
 }
