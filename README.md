@@ -1,7 +1,7 @@
 # vue-web3
 
 > A Vue.js project
-
+> Use Ropsten Test Net
 ## Build Setup
 
 ``` bash
